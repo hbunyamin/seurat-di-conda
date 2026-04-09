@@ -1,2 +1,5 @@
 datasets/
 *.tar.gz
+.Rproj.user
+.Rhistory
+*.Rproj
