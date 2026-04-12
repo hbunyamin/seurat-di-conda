@@ -5,13 +5,14 @@ format: html
 editor: visual
 ---
 
+
 ## Setup the Seurat Object
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+Dalam tutorial ini, kita akan menganalisis kumpulan data Sel Mononuklear Darah Perifer (_Peripheral Blood Mononuclear Cells_, PBMC) yang tersedia secara gratis dari 10X Genomics. Terdapat 2.700 sel tunggal yang telah di-sequence dengan menggunakan Illumina NextSeq 500.
+  
+Kita mulai dengan membaca data. Fungsi `Read10X()` membaca hasil keluaran dari pipeline <u>cellranger</u> milik 10X, dan mengembalikan matriks jumlah (*count matrix*) UMI (Unique Molecular Identifier). Nilai-nilai dalam matriks ini mewakili jumlah molekul untuk setiap fitur (misalnya gen; baris) yang terdeteksi di setiap sel (kolom). Perlu dicatat bahwa versi cellranger yang lebih baru kini juga menghasilkan output dalam <u>format file h5</u>, yang dapat dibaca menggunakan fungsi `Read10X_h5()` di Seurat.
 
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+Selanjutnya, kita menggunakan _count matrix_ untuk membuat objek `Seurat`. Objek ini berfungsi sebagai wadah yang menyimpan data (seperti _count matrix_) dan hasil analisis (seperti PCA atau hasil pengelompokan) untuk dataset data sel tunggal. Misalnya, di Seurat v5, _count matrix_ disimpan di `pbmc[["RNA"]]$counts`.
 
 ```{r}
 #| message: false
@@ -21,14 +22,14 @@ library(patchwork)
 ```
 
 ```{r}
-# Load the PBMC dataset
+#| warning: false
+# Load dataset PBMC
 pbmc.data <- Read10X(data.dir = "datasets/filtered_gene_bc_matrices/hg19/")
 
 # Initialize the Seurat object with the raw (non-normalized data).
 pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells = 3, min.features = 200)
 pbmc
 ```
-
 
 You can add options to executable code like this
 
