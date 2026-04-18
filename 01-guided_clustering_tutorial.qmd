@@ -102,4 +102,4 @@ head(pbmc@meta.data, 5)
 Pada contoh di bawah ini, kita visualisasikan metrik QC, dan menggunakannya untuk menyaring sel-sel.
 
 -   Kita *drop* sel-sel yang mempunyai jumlah fitur unik di atas 2500 atau kurang dari 200 atau kita *keep* jumlah fitur unik yang $\Rightarrow 200 < \text{jumlah fitur unik} < 2500$.
--   Kita *drop* sel-sel dengan 
+-   Kita *drop* sel-sel dengan
