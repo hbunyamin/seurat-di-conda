@@ -1,18 +1,17 @@
 ---
 title: "Seurat Guided Clustering Tutorial"
 author: "Hendra Bunyamin"
-format: html
+format: pdf
 editor: visual
 ---
 
-
 ## Setup the Seurat Object
 
-Dalam tutorial ini, kita akan menganalisis kumpulan data Sel Mononuklear Darah Perifer (_Peripheral Blood Mononuclear Cells_, PBMC) yang tersedia secara gratis dari 10X Genomics. Terdapat 2.700 sel tunggal yang telah di-sequence dengan menggunakan Illumina NextSeq 500.
-  
+Dalam tutorial ini, kita akan menganalisis kumpulan data Sel Mononuklear Darah Perifer (*Peripheral Blood Mononuclear Cells*, PBMC) yang tersedia secara gratis dari 10X Genomics. Terdapat 2.700 sel tunggal yang telah di-sequence dengan menggunakan Illumina NextSeq 500.
+
 Kita mulai dengan membaca data. Fungsi `Read10X()` membaca hasil keluaran dari pipeline <u>cellranger</u> milik 10X, dan mengembalikan matriks jumlah (*count matrix*) UMI (Unique Molecular Identifier). Nilai-nilai dalam matriks ini mewakili jumlah molekul untuk setiap fitur (misalnya gen; baris) yang terdeteksi di setiap sel (kolom). Perlu dicatat bahwa versi cellranger yang lebih baru kini juga menghasilkan output dalam <u>format file h5</u>, yang dapat dibaca menggunakan fungsi `Read10X_h5()` di Seurat.
 
-Selanjutnya, kita menggunakan _count matrix_ untuk membuat objek `Seurat`. Objek ini berfungsi sebagai wadah yang menyimpan data (seperti _count matrix_) dan hasil analisis (seperti PCA atau hasil pengelompokan) untuk dataset data sel tunggal. Misalnya, di Seurat v5, _count matrix_ disimpan di `pbmc[["RNA"]]$counts`.
+Selanjutnya, kita menggunakan *count matrix* untuk membuat objek `Seurat`. Objek ini berfungsi sebagai wadah yang menyimpan data (seperti *count matrix*) dan hasil analisis (seperti PCA atau hasil pengelompokan) untuk dataset data sel tunggal. Misalnya, di Seurat v5, *count matrix* disimpan di `pbmc[["RNA"]]$counts`.
 
 ```{r}
 #| message: false
@@ -27,15 +26,80 @@ library(patchwork)
 pbmc.data <- Read10X(data.dir = "datasets/filtered_gene_bc_matrices/hg19/")
 
 # Initialize the Seurat object with the raw (non-normalized data).
-pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells = 3, min.features = 200)
+pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", 
+                           min.cells = 3, min.features = 200)
 pbmc
 ```
 
-You can add options to executable code like this
+Seperti apakah bentuk *count matrix*?
 
 ```{r}
-#| echo: false
-2 * 2
+#| warning: false
+
+# Mari kita perhatikan beberapa gen pada 30 sel pertama
+pbmc.data[c("CD3D", "TCL1A", "MS4A1"),  1:30]
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+Nilai `.` pada matriks menunjukkan 0 (tidak ada molekul yang terdeteksi). Karena kebanyakan nilai dalam sebuah matriks scRNA-seq adalah 0, Seurat menggunakan representasi sparse-matrix sebisa mungkin. Penggunaan sparse-matrix menghemat penggunaan memori dan mempercepat proses untuk Drop-seq/inDrop/10x data.
+
+```{r}
+dense.size <- object.size(as.matrix(pbmc.data))
+dense.size
+```
+
+```{r}
+sparse.size <- object.size(pbmc.data)
+sparse.size
+```
+
+```{r}
+dense.size / sparse.size
+```
+
+## Alur kerja prapemrosesan standar
+
+Langkah-langkah di bawah ini mencakup alur kerja prapemrosesan standar untuk data scRNA-seq di Seurat. Langkah-langkah ini mencakup pemilihan dan penyaringan sel berdasarkan metrik kontrol kualitas (*quality control*, QC), normalisasi dan penskalaan (*scaling*) data, serta deteksi fitur yang sangat bervariasi.
+
+### *Quality control* (QC) dan pemilihan sel untuk analisis lebih lanjut
+
+Seurat memungkinkan Anda untuk dengan mudah menjelajahi metrik QC dan menyaring sel berdasarkan kriteria apa pun yang ditentukan pengguna. Beberapa metrik QC yang umum digunakan oleh komunitas antara lain
+
+-   Jumlah gen unik yang terdeteksi di setiap sel.
+
+    -   Sel berkualitas rendah atau *droplet* kosong seringkali hanya mengandung sedikit gen.
+    -   Pasangan atau kelompok sel dapat menunjukkan jumlah gen yang sangat tinggi.
+
+-   Demikian pula, jumlah total molekul yang terdeteksi di dalam sel (berkorelasi erat dengan gen-gen unik)
+
+-   Persentase urutan (*reads*) yang terpetakan ke genom mitokondria.
+
+    -   Sel-sel berkualitas rendah atau yang sekarat sering kali menunjukkan kontaminasi mitokondria yang luas
+    -   Kami menghitung metrik QC mitokondria menggunakan fungsi `PercentageFeatureSet()`, yang menghitung persentase hitungan yang berasal dari sekumpulan fitur
+    -   Kami menggunakan himpunan semua gen yang diawali dengan `MT-` sebagai himpunan gen mitokondria
+
+```{r}
+# The [[ operator can add columns to object metadata. This is a great place to stash QC stats
+pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
+```
+
+Kita coba visualisasi hubungan antara `nCount_RNA` dan `nFeature_RNA`.
+
+```{r}
+FeatureScatter(pbmc, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+```
+
+**Di manakah metrik QC disimpan di Seurat?**
+
+-   Jumlah gen unik dan total molekul secara otomatis dihitung selama pemanggilan fungsi `CreateSeuratObject()`
+
+    -   Anda dapat menemukannya tersimpan di metadata dari objeknya.
+
+```{r}
+# Tunjukkan metrik QC untuk 5 sel yang pertama
+head(pbmc@meta.data, 5)
+```
+
+Pada contoh di bawah ini, kita visualisasikan metrik QC, dan menggunakannya untuk menyaring sel-sel.
+
+-   Kita *drop* sel-sel yang mempunyai jumlah fitur unik di atas 2500 atau kurang dari 200 atau kita *keep* jumlah fitur unik yang $\Rightarrow 200 < \text{jumlah fitur unik} < 2500$.
+-   Kita *drop* sel-sel dengan 

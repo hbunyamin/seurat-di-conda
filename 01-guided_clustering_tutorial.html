@@ -108,19 +108,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="setup-the-seurat-object" class="level2">
 <h2 class="anchored" data-anchor-id="setup-the-seurat-object">Setup the Seurat Object</h2>
-<p>Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <a href="https://quarto.org" class="uri">https://quarto.org</a>.</p>
-</section>
-<section id="running-code" class="level2">
-<h2 class="anchored" data-anchor-id="running-code">Running Code</h2>
-<p>When you click the <strong>Render</strong> button a document will be generated that includes both content and the output of embedded code. You can embed code like this:</p>
+<p>Dalam tutorial ini, kita akan menganalisis kumpulan data Sel Mononuklear Darah Perifer (<em>Peripheral Blood Mononuclear Cells</em>, PBMC) yang tersedia secara gratis dari 10X Genomics. Terdapat 2.700 sel tunggal yang telah di-sequence dengan menggunakan Illumina NextSeq 500.</p>
+<p>Kita mulai dengan membaca data. Fungsi <code>Read10X()</code> membaca hasil keluaran dari pipeline <u>cellranger</u> milik 10X, dan mengembalikan matriks jumlah (<em>count matrix</em>) UMI (Unique Molecular Identifier). Nilai-nilai dalam matriks ini mewakili jumlah molekul untuk setiap fitur (misalnya gen; baris) yang terdeteksi di setiap sel (kolom). Perlu dicatat bahwa versi cellranger yang lebih baru kini juga menghasilkan output dalam <u>format file h5</u>, yang dapat dibaca menggunakan fungsi <code>Read10X_h5()</code> di Seurat.</p>
+<p>Selanjutnya, kita menggunakan <em>count matrix</em> untuk membuat objek <code>Seurat</code>. Objek ini berfungsi sebagai wadah yang menyimpan data (seperti <em>count matrix</em>) dan hasil analisis (seperti PCA atau hasil pengelompokan) untuk dataset data sel tunggal. Misalnya, di Seurat v5, <em>count matrix</em> disimpan di <code>pbmc[["RNA"]]$counts</code>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Kita mulai dengan membaca data. Fungsi <code>Read10X()</code> membaca hasil keluaran dari pipeline <u>cellranger</u> milik 10X, dan mengembalikan matriks jumlah UMI (Unique Molecular Identifier). Nilai-nilai dalam matriks ini mewakili jumlah molekul untuk setiap fitur (misalnya gen; baris) yang terdeteksi di setiap sel (kolom). Perlu dicatat bahwa versi cellranger yang lebih baru kini juga menghasilkan output dalam format file h5, yang dapat dibaca menggunakan fungsi Read10X_h5() di Seurat.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the PBMC dataset</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load dataset PBMC</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>pbmc.data <span class="ot">&lt;-</span> <span class="fu">Read10X</span>(<span class="at">data.dir =</span> <span class="st">"datasets/filtered_gene_bc_matrices/hg19/"</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize the Seurat object with the raw (non-normalized data).</span></span>

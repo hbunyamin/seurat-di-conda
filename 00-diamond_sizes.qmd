@@ -1,7 +1,7 @@
 ---
 title: "Diamond sizes"
 author: "Hendra Bunyamin"
-format: html
+format: pdf
 editor: visual
 ---
 
