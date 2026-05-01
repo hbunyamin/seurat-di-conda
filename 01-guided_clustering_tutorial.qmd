@@ -3,6 +3,12 @@ title: "Seurat Guided Clustering Tutorial"
 author: "Hendra Bunyamin"
 format: pdf
 editor: visual
+execute: 
+  fig-width: 9
+  fig-asp: 0.618
+  out-width: "70%"
+  fig-align: center
+  warning: false
 ---
 
 ## Setup the Seurat Object
@@ -102,4 +108,16 @@ head(pbmc@meta.data, 5)
 Pada contoh di bawah ini, kita visualisasikan metrik QC, dan menggunakannya untuk menyaring sel-sel.
 
 -   Kita *drop* sel-sel yang mempunyai jumlah fitur unik di atas 2500 atau kurang dari 200 atau kita *keep* jumlah fitur unik yang $\Rightarrow 200 < \text{jumlah fitur unik} < 2500$.
--   Kita *drop* sel-sel dengan
+-   Kita *drop* sel-sel yang mempunyai jumlah mitokondria > 5%. Sel-sel dengan jumlah mitokondria > 5% diindikasi merupakan sel yang sekarat atau stress. Lebih lanjut, sel-sel dengan jumlah mitokondria > 5% biasanya sel dengan jumlah gen sedikit dan merupakan sel-sel yang tertangkap dengan buruk atau tidak maksimal dari platform droplets seperti 10X Genomics.    
+   
+Mari kita visualisasikan metrik QC dalam plot biola.
+
+```{r}
+#| fig-width: 9
+#| fig-asp: 
+# Visualisasikan metrik QC sebagai plot biola 
+VlnPlot(pbmc, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), 
+        ncol = 3)
+```
+
+
