@@ -3,27 +3,28 @@ This repo explains how to create a **conda** environment where [Seurat](https://
 
 ## How to create the environment
 After installing miniconda, you can execute the following:
-1. Create a conda environment
+1. Install Rstudio $\Rightarrow$ this depends on your linux distro   
+3. Create a conda environment
 ```conda create -n seurat_di_conda```
-2. Activate the environment    
+4. Activate the environment    
 ```conda activate seurat_di_conda```         
-3. Install seurat      
+5. Install seurat      
 ```conda install -c conda-forge r-seurat```     
-4. Install bpcells        
+6. Install bpcells        
 ```conda install -c conda-forge bioconda::r-bpcells```
-5. Install presto     
+7. Install presto     
 ```conda install -c conda-forge bioconda::r-presto```
-6. Install glmgampoi     
+8. Install glmgampoi     
 ```conda install -c conda-forge bioconda::bioconductor-glmgampoi```
-7. Install signac     
+9. Install signac     
 ```conda install -c conda-forge bioconda::r-signac```     
-8. Install seuratdata    
+10. Install seuratdata    
 ```conda install -c conda-forge pwwang::r-seuratdata```
-9. Install azimuth     
+11. Install azimuth     
 ```conda install -c conda-forge bioconda::r-azimuth```
-10. Install seuratwrappers     
+12. Install seuratwrappers     
 ```conda install -c conda-forge pwwang::r-seuratwrappers```
-11. Install rstudio and run rstudio inside this environment.
+13. Run Rstudio inside this environment.
 
               
 Now you can start learning [Seurat](https://satijalab.org/seurat/articles/get_started_v5_new). Enjoy!
