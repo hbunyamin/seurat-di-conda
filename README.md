@@ -4,8 +4,8 @@ This repo explains how to create a **conda** environment where [Seurat](https://
 ## How to create the environment
 After installing miniconda, you can execute the following:
 1. Install Rstudio $\Rightarrow$ this depends on your linux distro   
-3. Create a conda environment
-```conda create -n seurat_di_conda```
+3. Create a conda environment      
+```conda create -n seurat_di_conda```      
 4. Activate the environment    
 ```conda activate seurat_di_conda```         
 5. Install seurat      
