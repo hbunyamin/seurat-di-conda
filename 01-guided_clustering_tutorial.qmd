@@ -4,7 +4,7 @@ author: "Hendra Bunyamin"
 format: pdf
 editor: visual
 execute: 
-  fig-width: 9
+  fig-width: 6
   fig-asp: 0.618
   out-width: "70%"
   fig-align: center
@@ -70,18 +70,18 @@ Langkah-langkah di bawah ini mencakup alur kerja prapemrosesan standar untuk dat
 
 Seurat memungkinkan Anda untuk dengan mudah menjelajahi metrik QC dan menyaring sel berdasarkan kriteria apa pun yang ditentukan pengguna. Beberapa metrik QC yang umum digunakan oleh komunitas antara lain
 
--   Jumlah gen unik yang terdeteksi di setiap sel.
+- Jumlah gen unik yang terdeteksi di setiap sel.
 
-    -   Sel berkualitas rendah atau *droplet* kosong seringkali hanya mengandung sedikit gen.
-    -   Pasangan atau kelompok sel dapat menunjukkan jumlah gen yang sangat tinggi.
+  - Sel berkualitas rendah atau *droplet* kosong seringkali hanya mengandung sedikit gen.
+  - Pasangan atau kelompok sel dapat menunjukkan jumlah gen yang sangat tinggi.
 
--   Demikian pula, jumlah total molekul yang terdeteksi di dalam sel (berkorelasi erat dengan gen-gen unik)
+- Demikian pula, jumlah total molekul yang terdeteksi di dalam sel (berkorelasi erat dengan gen-gen unik)
 
--   Persentase urutan (*reads*) yang terpetakan ke genom mitokondria.
+- Persentase urutan (*reads*) yang terpetakan ke genom mitokondria.
 
-    -   Sel-sel berkualitas rendah atau yang sekarat sering kali menunjukkan kontaminasi mitokondria yang luas
-    -   Kami menghitung metrik QC mitokondria menggunakan fungsi `PercentageFeatureSet()`, yang menghitung persentase hitungan yang berasal dari sekumpulan fitur
-    -   Kami menggunakan himpunan semua gen yang diawali dengan `MT-` sebagai himpunan gen mitokondria
+  - Sel-sel berkualitas rendah atau yang sekarat sering kali menunjukkan kontaminasi mitokondria yang luas
+  - Kami menghitung metrik QC mitokondria menggunakan fungsi `PercentageFeatureSet()`, yang menghitung persentase hitungan yang berasal dari sekumpulan fitur
+  - Kami menggunakan himpunan semua gen yang diawali dengan `MT-` sebagai himpunan gen mitokondria
 
 ```{r}
 # The [[ operator can add columns to object metadata. This is a great place to stash QC stats
@@ -96,9 +96,9 @@ FeatureScatter(pbmc, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
 
 **Di manakah metrik QC disimpan di Seurat?**
 
--   Jumlah gen unik dan total molekul secara otomatis dihitung selama pemanggilan fungsi `CreateSeuratObject()`
+- Jumlah gen unik dan total molekul secara otomatis dihitung selama pemanggilan fungsi `CreateSeuratObject()`
 
-    -   Anda dapat menemukannya tersimpan di metadata dari objeknya.
+  - Anda dapat menemukannya tersimpan di metadata dari objeknya.
 
 ```{r}
 # Tunjukkan metrik QC untuk 5 sel yang pertama
@@ -107,17 +107,23 @@ head(pbmc@meta.data, 5)
 
 Pada contoh di bawah ini, kita visualisasikan metrik QC, dan menggunakannya untuk menyaring sel-sel.
 
--   Kita *drop* sel-sel yang mempunyai jumlah fitur unik di atas 2500 atau kurang dari 200 atau kita *keep* jumlah fitur unik yang $\Rightarrow 200 < \text{jumlah fitur unik} < 2500$.
--   Kita *drop* sel-sel yang mempunyai jumlah mitokondria > 5%. Sel-sel dengan jumlah mitokondria > 5% diindikasi merupakan sel yang sekarat atau stress. Lebih lanjut, sel-sel dengan jumlah mitokondria > 5% biasanya sel dengan jumlah gen sedikit dan merupakan sel-sel yang tertangkap dengan buruk atau tidak maksimal dari platform droplets seperti 10X Genomics.    
-   
+- Kita *drop* sel-sel yang mempunyai jumlah fitur unik di atas 2500 atau kurang dari 200 atau kita *keep* jumlah fitur unik yang $\Rightarrow 200 < \text{jumlah fitur unik} < 2500$.
+- Kita *drop* sel-sel yang mempunyai jumlah mitokondria \> 5%. Sel-sel dengan jumlah mitokondria \> 5% diindikasi merupakan sel yang sekarat atau stress. Lebih lanjut, sel-sel dengan jumlah mitokondria \> 5% biasanya sel dengan jumlah gen sedikit dan merupakan sel-sel yang tertangkap dengan buruk atau tidak maksimal dari platform droplets seperti 10X Genomics.
+
 Mari kita visualisasikan metrik QC dalam plot biola.
 
 ```{r}
 #| fig-width: 9
-#| fig-asp: 
+#| fig-asp: 0.618
+
 # Visualisasikan metrik QC sebagai plot biola 
 VlnPlot(pbmc, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), 
         ncol = 3)
 ```
 
+```{r}
+# FeatureScatter is typically used to visualize feature-feature relationships, but can be used
+# for anything calculated by the object, i.e. columns in object metadata, PC scores etc.
+
+```
 
