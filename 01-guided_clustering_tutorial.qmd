@@ -28,8 +28,11 @@ library(patchwork)
 
 ```{r}
 #| warning: false
+# Set working directory
+setwd("/home/hbunyamin/Projects/seurat-di-conda/")
+
 # Load dataset PBMC
-pbmc.data <- Read10X(data.dir = "datasets/filtered_gene_bc_matrices/hg19/")
+pbmc.data <- Read10X(data.dir = "/home/hbunyamin/Datasets/filtered_gene_bc_matrices/hg19/")
 
 # Initialize the Seurat object with the raw (non-normalized data).
 pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", 
@@ -126,4 +129,3 @@ VlnPlot(pbmc, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"),
 # for anything calculated by the object, i.e. columns in object metadata, PC scores etc.
 
 ```
-
